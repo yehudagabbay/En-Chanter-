@@ -1,0 +1,101 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-size: 62.5%; /* כדי לעבוד עם REM */
+  font-family: 'Arial', sans-serif;
+}
+
+.container {
+  display: flex;
+  height: 100vh; /* כדי שכל התצוגה תתפוס את כל גובה המסך */
+  width: 100vw;  /* כדי שהתצוגה תתפוס את כל רוחב המסך */
+}
+
+/* הצד השמאלי - עם הטופס */
+.reverse-left-side {
+  background-color: white; /* רקע לבן */
+  width: 40%;  /* 40% מהמסך לטופס */
+  padding: 5rem;  /* מרווח פנימי */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* הצד הימני */
+.reverse-right-side {
+  background-color: lightblue; /* צבע רקע בהיר */
+  width: 60%;  /* 60% מהמסך לתוכן */
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 5rem;
+  color: white;
+}
+
+.read-more {
+  background-color: #0091FF;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 5rem;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.read-more:hover {
+  background-color: #007ACC;
+}
+
+.auth {
+  min-width: 25rem;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  border-radius: 1rem;
+  background-color: white;
+  box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, .5);
+}
+
+.auth h3 {
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.auth div input {
+  border-radius: .5rem;
+  border: none;
+  background-color: rgba(0, 0, 0, .1); 
+  padding: .5rem 1rem;
+  width: 100%;
+}
+
+.auth div input::placeholder {
+  color: #555;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 1.2rem;
+  background-color: #0091FF;
+  color: white;
+  border: none;
+  border-radius: 5rem;
+  font-size: 1.6rem;
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+
+.submit-button:hover {
+  background-color: #007ACC;
+}

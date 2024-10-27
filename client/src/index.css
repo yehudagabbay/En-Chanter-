@@ -1,0 +1,191 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.forgot-password, .register-link, .sign-in-link {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.forgot-password a, .register-link a, .sign-in-link a {
+  color: #0091FF;
+  font-size: 1.4rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.3s, transform 0.3s;
+  cursor: pointer; /* משנה את הסמן ליד */
+}
+
+.forgot-password a:hover, .register-link a:hover, .sign-in-link a:hover {
+  color: #007ACC;
+  transform: translateX(5px); /* אפקט של תזוזת החץ */
+}
+
+.arrow {
+  margin-left: 0.5rem;
+  transition: transform 0.3s;
+}
+
+a:hover .arrow {
+  transform: translateX(5px); /* אפקט של החץ עצמו */
+}
+
+html, body {
+  height: 100%; 
+  font-size: 62.5%; 
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  height: 100vh; 
+  width: 100vw; 
+}
+
+.left-side.register-background {
+  background: url('./assets/Images/micReg.webp') no-repeat center center; 
+  background-size: cover; /* ודא שהתמונה תכסה את כל השטח */
+  width: 60%; /* 60% מהמסך */
+  padding: 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+}
+
+.left-side.login-background {
+  background: url('./assets/Images/micLogin.jpg') no-repeat center center; 
+  background-size: cover; /* ודא שהתמונה תכסה את כל השטח */
+  width: 60%; /* 60% מהמסך */
+  padding: 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: white;
+}
+
+.left-side h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.left-side p {
+  font-size: 1.6rem;
+  margin-bottom: 3rem;
+}
+
+.read-more {
+  background-color: #0091FF;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 5rem;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.read-more:hover {
+  background-color: #007ACC;
+}
+
+.right-side {
+  background-color: white;
+  width: 40%; /* 40% מהמסך */
+  padding: 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.auth {
+  min-width: 25rem;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  border-radius: 1rem;
+  background-color: white;
+  box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, .5);
+  animation: slideIn 1s ease-in-out forwards;
+}
+
+.auth h3 {
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.auth div input {
+  border-radius: .5rem;
+  border: none;
+  background-color: rgba(0, 0, 0, .1); 
+  padding: .5rem 1rem;
+  width: 100%;
+}
+
+.auth div input::placeholder {
+  color: #555;
+}
+
+.submit-button, .login-button {
+  width: 100%;
+  padding: 1.2rem;
+  background-color: #0091FF;
+  color: white;
+  border: none;
+  border-radius: 5rem;
+  font-size: 1.6rem;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: background-color 0.3s;
+}
+.google-login-button{
+  width: 100%;
+  padding: 1.2rem;
+  background-color: #0091FF;
+  color: white;
+  border: none;
+  border-radius: 5rem;
+  font-size: 1.6rem;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover, .login-button:hover {
+  background-color: #007ACC;
+}
+
+.signIn {
+  background-color: transparent;
+  border: 1px solid gray;
+  border-radius: 1rem;
+  padding: .5rem 1.5rem;
+  color: #555;
+  cursor: pointer;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    translate: 0 -100px;
+  }
+  to {
+    opacity: 1;
+    translate: 0;
+  }
+}
+
+
