@@ -9,8 +9,8 @@ function App() {
 
   return (
     <Routes>
+      <Route index element={<Login />} />
       <Route path="/auth/register" element={<Register />} />
-      <Route path="/auth/login" element={<Login />} />
       <Route path="/auth/forgetPass" element={<ForgetPass/>}/>
       <Route path="/home/manager" element={<HomePage />} /> 
       <Route path="/home/roomManager/:roomId" element={<RoomManager />} />
