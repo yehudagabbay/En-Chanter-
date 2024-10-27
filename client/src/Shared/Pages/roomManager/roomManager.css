@@ -1,0 +1,40 @@
+.room-manager-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .layout {
+    display: flex;
+    width: 100%;
+  }
+  
+  .sidebar {
+    width: 60%;
+    padding: 20px;
+    background-color: #4a0beb;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .content {
+    width: 40%;
+    padding: 20px;
+    background: url('/client/src/assets/Images/micTable.jpg') no-repeat center center;
+    background-size: cover;
+  }
+  
+  .link {
+    color: #1976d2;
+    text-decoration: underline;
+  }
+  
+  .link:hover {
+    color: #004ba0;
+    text-decoration: none;
+  }
+  
+  .DataGrid-root {
+    border: none;
+  }
+  
