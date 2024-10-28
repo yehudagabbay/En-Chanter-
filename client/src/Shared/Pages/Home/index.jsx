@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
@@ -15,7 +15,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import './Home.css';
+import './index.css';
 
 export default function Home() {
   const [user, setUser] = useState(null); // שמירת המידע על המשתמש המחובר
@@ -27,34 +27,53 @@ export default function Home() {
   const [newRoomName, setNewRoomName] = useState(''); // שם החדר החדש
   const [newRoomType, setNewRoomType] = useState('Pop'); // סוג החדר החדש
   const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
-    // נתונים מדומים להצגת החדרים
-    const mockRooms = [
-      { id: 1, roomId: '1', roomName: 'Room A', ownerId: '101', createdAt: '2024-10-01', roomType: 'Pop' },
-      { id: 2, roomId: '2', roomName: 'Room B', ownerId: '102', createdAt: '2024-10-02', roomType: 'Rock' },
-      { id: 3, roomId: '3', roomName: 'Room C', ownerId: '103', createdAt: '2024-10-03', roomType: 'Jazz' },
-    ];
-    setRooms(mockRooms); // עדכון רשימת החדרים בסטייט
-  }, []);
-
-  useEffect(() => {
-    // בדיקה אם יש משתמש מחובר בעת טעינת הקומפוננטה
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser)); // אם יש משתמש שמור ב-localStorage, עדכון הסטייט
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+
+      const fetchRooms = async () => {
+        try {
+          const response = await fetch(`http://www.apienchanter.somee.com/api/KaraokeRooms/room/owner/${parsedUser.id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'accept': 'application/json',
+            },
+          });
+          console.log(response);
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+            
+            setRooms(data); // עדכון רשימת החדרים בסטייט
+          } else {
+            alert('Failed to fetch rooms.');
+          }
+        } catch (error) {
+          if (error.message === 'Unexpected end of JSON input') {
+            alert('צור את החדר הראשון שלך');
+          } else {
+            alert(`Error fetching rooms: ${error.message}`);
+          }
+        }
+      };
+
+      fetchRooms(); // קריאה לפונקציה לטעינת החדרים
     } else {
-      navigate('/auth/login'); // ניתוב לעמוד ההתחברות אם המשתמש לא מחובר
+      navigate('/'); // ניתוב לעמוד ההתחברות אם המשתמש לא מחובר
     }
   }, [navigate]);
-
-
 
   // פונקציה ליציאה מהחשבון
   const handleLogout = async () => {
     try {
       localStorage.removeItem('user'); // הסרת המשתמש מ-localStorage
       alert('Logout Successful');
-      navigate('/auth/login'); // ניתוב לעמוד ההתחברות
+      navigate('/'); // ניתוב לעמוד ההתחברות
     } catch (error) {
       alert(`Error: ${error.message}`); // טיפול בשגיאה
     }
@@ -67,22 +86,25 @@ export default function Home() {
 
   // פונקציה לאישור הוספת חדר חדש
   const handleAddRoomConfirm = async () => {
-    // יצירת מספר רנדומלי של 4 ספרות להוספה ל-ID של המשתמש
+    // פונקציה לקבלת תאריך נוכחי בפורמט המתאים
     const getCurrentDate = () => {
       const today = new Date();
-      return today.toISOString()// יחזיר תאריך בפורמט YYYY-MM-DD
+      return today.toISOString(); // יחזיר תאריך בפורמט ISO
     };
-
+    const passwordRoom = user?.id.toString()
+    // יצירת אובייקט החדר החדש עם הפרטים מהסטייט
     const newRoom = {
-      roomID: 0,
+      id: 0, // הוספת מזהה ייחודי חדש שמבוסס על מספר החדרים הקיימים
       roomName: newRoomName,
       ownerID: user?.id, // מזהה בעל החדר הוא המשתמש המחובר
-      createdAt: getCurrentDate(), // יצירת אובייקט Date בפורמט yyyy-mm-dd
+      createdAt: getCurrentDate(), // יצירת תאריך בפורמט ISO
       roomType: newRoomType, // סוג החדר
+      roomPassword: passwordRoom
     };
-    console.log(newRoom)
+
     try {
-      const response = await fetch('http://www.enchanterapiuser.somee.com/api/karakoeRoom/create', {
+      // שליחת בקשת POST לכתובת ה-API שלך
+      const response = await fetch('http://www.apienchanter.somee.com/api/KaraokeRooms/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,18 +112,22 @@ export default function Home() {
         },
         body: JSON.stringify(newRoom),
       });
-
-      console.log(response)
+      console.log(newRoom);
+      // טיפול בתגובה מהשרת
       if (response.ok) {
-        setRooms([...rooms, { ...newRoom, id: rooms.length + 1 }]);
+        // אם הבקשה עברה בהצלחה, נוסיף את החדר לסטייט הקיים
+        setRooms([...rooms, newRoom]);
         setOpenAddRoom(false); // סגירת חלון הוספת חדר
         setNewRoomName(''); // איפוס שם החדר החדש
         setNewRoomType('Pop'); // איפוס סוג החדר החדש
+        console.log(`לאחר היצירה:`, newRoom);
       } else {
+        // במקרה של שגיאה מצד השרת, נקרא את הודעת השגיאה
         const errorText = await response.text();
         alert(`Failed to add room: ${errorText}`);
       }
     } catch (error) {
+      // טיפול בשגיאה בעת שליחה לשרת
       alert(`Error: ${error.message}`);
     }
   };
@@ -134,14 +160,33 @@ export default function Home() {
   };
 
   // פונקציה למחיקת חדר
-  const handleDeleteClick = (roomId) => {
+  const handleDeleteClick = async (id) => {
+    console.log(id);
+
     if (window.confirm('Are you sure you want to delete this room?')) {
-      setRooms((prevRooms) => prevRooms.filter((room) => room.id !== roomId)); // מחיקת החדר מהסטייט
+      try {
+        const response = await fetch(`http://www.apienchanter.somee.com/api/KaraokeRooms/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'accept': 'application/json',
+          },
+        });
+        console.log(id);
+        if (response.ok) {
+          setRooms((prevRooms) => prevRooms.filter((r) => r.roomId !== room.roomId)); // מחיקת החדר מהסטייט
+        } else {
+          alert('Failed to delete room.');
+        }
+      } catch (error) {
+        alert(`Error deleting room: ${error.message}`);
+      }
     }
   };
 
+
   return (
-    <div className='container layout'>
+    <div className='container'>
       {user && (
         <>
           <div className='sidebar'>
@@ -149,6 +194,8 @@ export default function Home() {
               Log Out
             </button>
             <button onClick={handleAddRoom} className='add-room-button'>Add New Room</button>
+            <p style={{ color: 'white', fontSize: "2rem" }}> asdf
+            }</p>
           </div>
           <div className='content'>
             <Paper sx={{ height: 400, width: '100%' }}>
@@ -156,23 +203,31 @@ export default function Home() {
                 rows={rooms}
                 columns={[
                   {
-                    field: 'roomName', headerName: 'Room Name', flex: 1, renderCell: (params) => (
+                    field: 'roomName',
+                    headerName: 'Room Name',
+                    flex: 1,
+                    renderCell: (params) =>
                       editingRoomId === params.row.id ? (
                         <TextField
                           value={editedRoomName}
                           onChange={(e) => setEditedRoomName(e.target.value)}
                         />
                       ) : (
-                        <span onClick={() => handleRoomClick(params.row.roomId)} style={{ cursor: 'pointer', textDecoration: 'underline' }}>
+                        <span
+                          onClick={() => handleRoomClick(params.row.roomId)}
+                          style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                        >
                           {params.value}
                         </span>
-                      )
-                    )
+                      ),
                   },
                   { field: 'ownerId', headerName: 'Owner ID', flex: 1 },
                   { field: 'createdAt', headerName: 'Created At', flex: 1 },
                   {
-                    field: 'roomType', headerName: 'Room Type', flex: 1, renderCell: (params) => (
+                    field: 'roomType',
+                    headerName: 'Room Type',
+                    flex: 1,
+                    renderCell: (params) =>
                       editingRoomId === params.row.id ? (
                         <TextField
                           value={editedRoomType}
@@ -180,14 +235,13 @@ export default function Home() {
                         />
                       ) : (
                         params.value
-                      )
-                    )
+                      ),
                   },
                   {
                     field: 'actions',
                     headerName: 'Actions',
                     flex: 1,
-                    renderCell: (params) => (
+                    renderCell: (params) =>
                       editingRoomId === params.row.id ? (
                         <>
                           <IconButton onClick={() => handleSaveClick(params.row.id)}>
@@ -202,19 +256,22 @@ export default function Home() {
                           <IconButton onClick={() => handleEditClick(params.row)}>
                             <EditIcon />
                           </IconButton>
-                          <IconButton onClick={() => handleDeleteClick(params.row.id)}>
+                          <IconButton onClick={() => handleDeleteClick(params?.row?.id)}>
                             <DeleteIcon />
                           </IconButton>
                         </>
-                      )
-                    ),
+                      ),
                   },
                 ]}
-                pageSizeOptions={[5, 10]}
+                getRowId={(row) => row.roomID || row.id} // שינוי כאן: שימוש במזהה ייחודי מותאם אישית
+
+                pageSizeOptions={[5, 10, 100]}
+                pageSize={10}
                 checkboxSelection
                 sx={{ border: 0 }}
               />
             </Paper>
+
           </div>
           <Dialog open={openAddRoom} onClose={() => setOpenAddRoom(false)}>
             <DialogTitle>Add New Room</DialogTitle>
@@ -249,6 +306,32 @@ export default function Home() {
           </Dialog>
         </>
       )}
+      {/* <div className="left-block"></div>
+      <aside className="right-block">
+        <table>
+          <thead>
+            <tr>
+              <th>Room Name</th>
+              <th>Owner ID</th>
+              <th>Created At</th>
+              <th>Room Type</th>
+            </tr>
+
+          </thead>
+          <tbody>
+            {rooms.map((room) => (
+              <tr key={room.roomID}>
+                <td>{room.roomName}</td>
+                <td>{room.ownerId}</td>
+                <td>{room.createdAt}</td>
+                <td>{room.roomType}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+      </aside> */}
+
     </div>
   );
 }

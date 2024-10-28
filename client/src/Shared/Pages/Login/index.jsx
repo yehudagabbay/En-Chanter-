@@ -28,66 +28,66 @@ export default function Login() {
 
   // פונקציה לטיפול בהתחברות עם שם משתמש וסיסמה
   // פונקציה לטיפול בהתחברות עם שם משתמש וסיסמה
-const handleUsernamePasswordLogin = async () => {
-  setIsLoading(true); // הפעלת מצב טעינה
-  try {
-    // שליחת בקשת התחברות לשרת ה-API
-    const response = await fetch(apiUrl + 'login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'accept': 'application/json',
-      },
-      body: JSON.stringify({ userName: username, password: password }), // שליחת פרטי התחברות
-    });
+  const handleUsernamePasswordLogin = async () => {
+    setIsLoading(true); // הפעלת מצב טעינה
+    try {
+      // שליחת בקשת התחברות לשרת ה-API
+      const response = await fetch(apiUrl + 'login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': 'application/json',
+        },
+        body: JSON.stringify({ userName: username, password: password }), // שליחת פרטי התחברות
+      });
 
-    const data = await response.json(); // קבלת התגובה מה-API
-    setIsLoading(false); // סיום מצב טעינה
+      const data = await response.json(); // קבלת התגובה מה-API
+      setIsLoading(false); // סיום מצב טעינה
 
-    if (response.ok) {
-      console.log('Login Successful');
-      // שמירת המידע על המשתמש ב-localStorage כדי שניתן יהיה לגשת אליו מאוחר יותר
-      localStorage.setItem('user', JSON.stringify(data));
-      setUser(data); // עדכון המשתמש בסטייט
+      if (response.ok) {
+        console.log('Login Successful');
+        // שמירת המידע על המשתמש ב-localStorage כדי שניתן יהיה לגשת אליו מאוחר יותר
+        localStorage.setItem('user', JSON.stringify(data));
+        setUser(data); // עדכון המשתמש בסטייט
 
-      // ניווט לעמוד הבית לאחר התחברות מוצלחת
-      navigate('/home/manager');
-    } else {
-      alert('Login Failed');
+        // ניווט לעמוד הבית לאחר התחברות מוצלחת
+        navigate('/home/manager');
+      } else {
+        alert('Login Failed');
+      }
+
+    } catch (error) {
+      setIsLoading(false); // סיום מצב טעינה במקרה של שגיאה
+      alert(`Error: ${error.message}`); // טיפול בשגיאה
     }
+  };
 
-  } catch (error) {
-    setIsLoading(false); // סיום מצב טעינה במקרה של שגיאה
-    alert(`Error: ${error.message}`); // טיפול בשגיאה
-  }
-};
-
-// useEffect לבדיקת המשתמש ב-LocalStorage
-useEffect(() => {
-  const storedUser = localStorage.getItem('user');
-  if (storedUser) {
-    setUser(JSON.parse(storedUser));
-    navigate('/home/manager'); // אם המשתמש קיים ב-LocalStorage, להעביר לעמוד הבית
-  }
-}, [navigate]);
+  // useEffect לבדיקת המשתמש ב-LocalStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      navigate('/home/manager'); // אם המשתמש קיים ב-LocalStorage, להעביר לעמוד הבית
+    }
+  }, [navigate]);
 
 
   // פונקציה לטיפול בהתחברות עם Google
-// פונקציה לטיפול בהתחברות עם Google
-const handleGoogleLogin = async () => {
-  const provider = new GoogleAuthProvider(); // ספק התחברות של Google
-  try {
-    const result = await signInWithPopup(firebase.auth(), provider); // התחברות עם Google
-    const user = result.user; // קבלת פרטי המשתמש מ-Google
-    localStorage.setItem('user', JSON.stringify(user)); // שמירת המשתמש ב-LocalStorage
-    setUser(user); // עדכון המשתמש בסטייט
-    alert(`Login Successful, Welcome ${user.displayName}`);
-    console.log('User in HomePage:', user); // בדיקה האם המשתמש קיים בסטייט של עמוד הניהול
-    navigate('/home/manager'); // ניווט לעמוד הבית לאחר התחברות מוצלחת
-  } catch (error) {
-    alert(`Error: ${error.message}`); // טיפול בשגיאה בהתחברות עם Google
-  }
-};
+  // פונקציה לטיפול בהתחברות עם Google
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider(); // ספק התחברות של Google
+    try {
+      const result = await signInWithPopup(firebase.auth(), provider); // התחברות עם Google
+      const user = result.user; // קבלת פרטי המשתמש מ-Google
+      localStorage.setItem('user', JSON.stringify(user)); // שמירת המשתמש ב-LocalStorage
+      setUser(user); // עדכון המשתמש בסטייט
+      alert(`Login Successful, Welcome ${user.displayName}`);
+      console.log('User in HomePage:', user); // בדיקה האם המשתמש קיים בסטייט של עמוד הניהול
+      navigate('/home/manager'); // ניווט לעמוד הבית לאחר התחברות מוצלחת
+    } catch (error) {
+      alert(`Error: ${error.message}`); // טיפול בשגיאה בהתחברות עם Google
+    }
+  };
 
 
   // פונקציה ליציאה מהחשבון
@@ -118,8 +118,8 @@ const handleGoogleLogin = async () => {
         </div>
       ) : (
         <div className='left-side login-background'>
-        <h1>Welcome to En'chanter la compagnie</h1>
-<p>Take full control of your karaoke experience! Easily manage rooms, users, and song queues with real-time audio streaming. Elevate every session to a new level of fun and organization.</p>
+          <h1>Welcome to En'chanter la compagnie</h1>
+          <p>Take full control of your karaoke experience! Easily manage rooms, users, and song queues with real-time audio streaming. Elevate every session to a new level of fun and organization.</p>
 
           <button className='read-more'>Read More</button>
         </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './index.css';
 
 export default function Register() {
     const [username, setUsername] = useState('');
@@ -36,7 +37,7 @@ export default function Register() {
 
             if (response.ok) {
                 alert('Registration Successful');
-                navigate('/auth/login');
+                navigate('/home/manager');
             } else {
                 const errorResult = await response.text();
                 alert(`Registration Failed: ${errorResult}`);

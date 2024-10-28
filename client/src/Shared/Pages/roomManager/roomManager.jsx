@@ -53,24 +53,31 @@ export default function RoomManager() {
   };
 
   const handleRejectRequest = (requestId) => {
-    console.log(`Rejected request ${requestId}`);
+    setRequests(requests.filter(request => request.id !== requestId));
   };
 
-  const handleMoveUpRequest = (index) => {
+
+  const handleMoveUpRequest = (requestId) => {
+    const index = requests.findIndex(request => request.id === requestId);
     if (index > 0) {
       const newRequests = [...requests];
+      // הזזת השורה למעלה
       [newRequests[index - 1], newRequests[index]] = [newRequests[index], newRequests[index - 1]];
       setRequests(newRequests);
     }
   };
 
-  const handleMoveDownRequest = (index) => {
+  const handleMoveDownRequest = (requestId) => {
+    const index = requests.findIndex(request => request.id === requestId);
     if (index < requests.length - 1) {
       const newRequests = [...requests];
+      // הזזת השורה למטה
       [newRequests[index + 1], newRequests[index]] = [newRequests[index], newRequests[index + 1]];
       setRequests(newRequests);
     }
   };
+
+
 
   const handleOpenMessageDialog = (nickname, phone) => {
     setSelectedUser({ nickname, phone });
@@ -94,6 +101,8 @@ export default function RoomManager() {
         <Paper sx={{ height: 400, width: '100%' }}>
           <DataGrid
             rows={requests}
+            getRowId={(row) => row.id} // שימוש ב-ID כזיהוי ייחודי לשורה
+
             columns={[
               { field: 'nickname', headerName: 'Nickname', flex: 1 },
               { field: 'phone', headerName: 'Phone Number', flex: 1 },
@@ -118,10 +127,10 @@ export default function RoomManager() {
                     <IconButton onClick={() => handleRejectRequest(params.row.id)}>
                       <CloseIcon className='reject-icon' />
                     </IconButton>
-                    <IconButton onClick={() => handleMoveUpRequest(params.row.id - 1)}>
+                    <IconButton onClick={() => handleMoveUpRequest(params.row.id)}>
                       <ArrowUpwardIcon className='move-up-icon' />
                     </IconButton>
-                    <IconButton onClick={() => handleMoveDownRequest(params.row.id - 1)}>
+                    <IconButton onClick={() => handleMoveDownRequest(params.row.id)}>
                       <ArrowDownwardIcon className='move-down-icon' />
                     </IconButton>
                     <IconButton onClick={() => handleOpenMessageDialog(params.row.nickname, params.row.phone)}>
@@ -135,6 +144,7 @@ export default function RoomManager() {
             checkboxSelection
             sx={{ border: 0 }}
           />
+
         </Paper>
       </div>
       <div className='content'>

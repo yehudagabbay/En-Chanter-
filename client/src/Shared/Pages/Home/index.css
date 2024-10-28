@@ -1,0 +1,74 @@
+/* עיצוב עבור הקונטיינר הכללי */
+.container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  height: 100vh;
+  background-color: #f0f0f0;
+
+
+}
+
+/* חלוקה לשני חלקים: צד ימין וצד שמאל */
+.left-block {
+  width: 100%;
+  grid-column: 1/6;
+}
+
+.right-block {
+  width: 100%;
+  grid-column: 6;
+  background-color: green;
+padding: 1rem;
+}
+.right-block table {
+  width: 100%;
+  height: min-content;
+  background-color: #f0f0f0;
+  font-size: 1.5rem;
+  
+}
+
+.right-block table td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+.right-block table th {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+
+
+
+/* צד ימני: הכפתורים והאזור הצדדי */
+.sidebar {
+  width: 50%;
+  /* 40% לרוחב */
+  padding: 20px;
+  background: url('/client/src/assets/Images/micLogin.jpg') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+
+/* צד שמאלי: אזור הטבלה */
+.content {
+  width: 100%;
+  /* 60% לרוחב */
+  padding: 20px;
+}
+
+/* עיצוב כפתורים */
+.logout-button,
+.add-room-button {
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}

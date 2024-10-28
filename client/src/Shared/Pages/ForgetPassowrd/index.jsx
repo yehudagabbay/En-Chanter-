@@ -4,13 +4,15 @@ import './forget.css';
 export default function ForgetPass() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(''); // שמירת הקוד האקראי שנשלח למשתמש
+  const [inputCode, setInputCode] = useState(''); // קוד שהמשתמש מזין
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   // כתובת ה-API
   const apiUrl = 'http://www.enchanterapiuser.somee.com/api/UsersControllers/';
 
+  // פונקציה לשליחת קוד איפוס למייל של המשתמש
   const handleResetClick = async () => {
     try {
       const response = await fetch(apiUrl + 'send-reset-code', {
@@ -21,13 +23,12 @@ export default function ForgetPass() {
         },
         body: JSON.stringify({ email: email }), // שליחת מייל לקבלת קוד איפוס
       });
-      console.log("after fetch ", response);
 
       if (response.ok) {
-        // Generate a random 4-digit code
+        // יצירת קוד אקראי בן 4 ספרות ושמירה ב-state (לצורך התהליך המקומי)
         const randomCode = Math.floor(1000 + Math.random() * 9000);
         console.log(`Generated Code: ${randomCode}`);
-        setCode(randomCode);
+        setCode(randomCode); // שמירת הקוד ב-state בלבד
         setStep(2); // מעבר לשלב הבא אם הבקשה הצליחה
       } else {
         alert('Failed to send reset code');
@@ -37,15 +38,17 @@ export default function ForgetPass() {
     }
   };
 
+  // פונקציה לאימות קוד האיפוס
   const handleCodeVerification = () => {
-    // Here you would verify the code entered by the user with the backend
-    if (code === parseInt(document.getElementById('verificationCode').value)) {
+    // אימות קוד האיפוס על בסיס ה-state של הקוד
+    if (parseInt(inputCode) === code) {
       setStep(3); // אם הקוד אומת בהצלחה, מעבר לשלב הבא
     } else {
       alert('Verification code is incorrect');
     }
   };
 
+  // פונקציה לאיפוס הסיסמה
   const handlePasswordReset = async () => {
     if (password !== confirmPassword) {
       alert('Passwords do not match');
@@ -62,7 +65,7 @@ export default function ForgetPass() {
       });
       if (response.ok) {
         alert('Password reset successful!');
-        setStep(1); // Reset steps after successful password reset
+        setStep(1); // איפוס השלב לאחר איפוס הסיסמה בהצלחה
       } else {
         alert('Failed to reset password');
       }
@@ -100,6 +103,8 @@ export default function ForgetPass() {
                   id='verificationCode'
                   placeholder='Enter Code'
                   type="text"
+                  value={inputCode} // שימוש ב-state לשמירת הקוד שהמשתמש מכניס
+                  onChange={(e) => setInputCode(e.target.value)} // עדכון ה-state עם הערך שהמשתמש מזין
                   required
                 />
               </div>
@@ -135,8 +140,9 @@ export default function ForgetPass() {
       </div>
 
       <div className='reverse-right-side'>
-        <h1>GoFinance</h1>
-        <p>The most popular peer to peer lending at SEA</p>
+        <h1>En'chanter Karaoke System </h1>
+        <p>Easily reset your password to regain full access to your karaoke experience.</p><br/>
+
         <button className="read-more">Read More</button>
       </div>
     </div>
