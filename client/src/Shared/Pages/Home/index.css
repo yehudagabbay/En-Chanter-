@@ -1,68 +1,107 @@
 /* עיצוב עבור הקונטיינר הכללי */
 .container {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(12, 1fr);
+  display: flex;
   height: 100vh;
   background-color: #f0f0f0;
-
-
 }
+
+.container dialog {
+  position: "absolute";
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  min-width: 30rem;
+  min-height: 20rem;
+  border-radius: 1rem;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.container dialog 
 
 /* חלוקה לשני חלקים: צד ימין וצד שמאל */
 .left-block {
-  width: 100%;
-  grid-column: 1/6;
-}
-
-.right-block {
-  width: 100%;
-  grid-column: 6;
-  background-color: green;
-padding: 1rem;
-}
-.right-block table {
-  width: 100%;
-  height: min-content;
-  background-color: #f0f0f0;
-  font-size: 1.5rem;
-  
-}
-
-.right-block table td {
-  padding: 10px;
-  text-align: center;
-  border: 1px solid #ccc;
-}
-
-.right-block table th {
-  padding: 10px;
-  text-align: center;
-  border: 1px solid #ccc;
-}
-
-
-
-
-/* צד ימני: הכפתורים והאזור הצדדי */
-.sidebar {
-  width: 50%;
-  /* 40% לרוחב */
-  padding: 20px;
-  background: url('/client/src/assets/Images/micLogin.jpg') no-repeat center center;
+  flex: 1 1 30%;
   background-size: cover;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 20px;
   align-items: flex-start;
 }
 
-
-/* צד שמאלי: אזור הטבלה */
-.content {
-  width: 100%;
-  /* 60% לרוחב */
+.left-block .content {
+  background-color: rgba(255, 255, 255, 1);
+  backdrop-filter: blur(15px);
+  border-radius: 10px;
   padding: 20px;
+  width: 100%;
+  height: 50%;
+  translate: 0 0;
+  opacity: 0;
+  visibility: hidden;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  animation: fadeIn 2s forwards;
+}
+
+
+.right-block {
+  flex: 1 1 70%;
+  background-color: #ffffff;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+}
+
+.right-block .content {
+  background-image: url("../../../assets/Images/roomManage.jpg");
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  border-radius: 1rem;
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+  box-shadow: 2px 2px 10px 1px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  animation: rightFadeIn 2s backwards;
+}
+
+.right-block .content img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.right-block .content table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: clamp(1rem, 1.7625vh, 2rem);
+  backdrop-filter: blur(15px);
+  color: #ffffff;
+}
+
+.right-block table td,
+.right-block table th {
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+.right-block table tbody tr:hover {
+  background-color: rgba(0, 0, 0, .1);
+  cursor: default;
+  transition: background-color 0.2s ease-in-out;
 }
 
 /* עיצוב כפתורים */
@@ -71,4 +110,218 @@ padding: 1rem;
   padding: 10px 20px;
   margin-bottom: 10px;
   cursor: pointer;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover,
+.add-room-button:hover {
+  background-color: #0056b3;
+}
+
+/* טופס הוספת חדר */
+.dialog {
+  width: 100%;
+}
+
+.dialog .MuiDialogContent-root {
+  padding: 20px;
+}
+
+.dialog .MuiDialogActions-root {
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* קלטים */
+.input-box {
+  margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* עיצוב האייקונים */
+.icon-button {
+  color: #007bff;
+}
+
+.icon-button:hover {
+  color: #0056b3;
+}
+
+/* כפתור גוגל */
+.google-login-button {
+  padding: 10px;
+  width: 100%;
+  background-color: #db4437;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 5px;
+}
+
+.google-login-button:hover {
+  background-color: #c23321;
+}
+
+/* קישורים */
+.forgot-password a,
+.register-link a {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.forgot-password a:hover,
+.register-link a:hover {
+  color: #0056b3;
+}
+
+/* עיצוב אייקונים בטבלה */
+.icon-button-table {
+  padding: 5px;
+}
+
+/* עיצוב לשיפור חווית המשתמש */
+.editing-row {
+  background-color: rgba(255, 255, 0, 0.1);
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* עיצוב אייקון פח למחיקה */
+.delete-icon-button {
+  color: #ff4d4d;
+}
+
+.delete-icon-button:hover {
+  color: #cc0000;
+}
+
+/* עיצוב לאייקון עיפרון לעריכה */
+.edit-icon-button {
+  color: #007bff;
+}
+
+.edit-icon-button:hover {
+  color: #0056b3;
+}
+
+/* עיצוב לאייקוני הפעולות (שמירה וביטול) */
+.check-icon-button {
+  color: #28a745;
+}
+
+.check-icon-button:hover {
+  color: #218838;
+}
+
+.close-icon-button {
+  color: #ffc107;
+}
+
+.close-icon-button:hover {
+  color: #e0a800;
+}
+
+/* עיצוב לאייקונים בטבלה */
+
+
+.right-block table .action-buttons div {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.right-block table td.action-buttons div .icon-button {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.right-block table td.action-buttons .icon-button:hover {
+  color: #ff6b6b;
+}
+
+/* עיצוב נוסף עבור עמודות עם אייקונים בטבלה */
+.right-block table td {
+  position: relative;
+}
+
+.right-block table td .icon-container {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 5px;
+}
+
+.right-block table td .icon-container .edit-icon,
+.right-block table td .icon-container .delete-icon {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.right-block table td .icon-container .edit-icon:hover {
+  color: #28a745;
+}
+
+.right-block table td .icon-container .delete-icon:hover {
+  color: #ff4d4d;
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    visibility: hidden;
+    translate: 0 0;
+
+
+  }
+
+  to {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 50%;
+  }
+
+}
+
+@keyframes rightFadeIn {
+  from {
+    opacity: 0;
+    visibility: hidden;
+    translate: 0 50%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .left-block {
+    width: 100%;
+
+  }
+
+  .right-block {
+    width: 100%;
+
+  }
+
 }

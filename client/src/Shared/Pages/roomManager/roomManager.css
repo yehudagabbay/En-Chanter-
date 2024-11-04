@@ -11,17 +11,19 @@
   .sidebar {
     width: 60%;
     padding: 20px;
-    background-color: #4a0beb;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    background: url('../../../assets/Images/micTable.jpg') no-repeat center center;
+    background-size: cover;
   }
   
   .content {
     width: 40%;
     padding: 20px;
-    background: url('/client/src/assets/Images/micTable.jpg') no-repeat center center;
-    background-size: cover;
+    background-color: #4a0beb;
+
+
   }
   
   .link {
@@ -37,4 +39,17 @@
   .DataGrid-root {
     border: none;
   }
-  
+  /* עיצוב עבור שורה המכילה את התמונה של האווטר */
+.avatar-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ccc;
+}

@@ -1,0 +1,7 @@
+.left-side.register-background {
+    background-image: url('/client/src/assets/Images/migForget.jpg');
+    background-size: cover; /* מכסה את כל השטח */
+    background-position: center; /* ממקם את התמונה במרכז */
+    background-repeat: no-repeat; /* מונע חזרה של התמונה */
+    height: 100%; /* ודא שהגובה מתאים */
+}

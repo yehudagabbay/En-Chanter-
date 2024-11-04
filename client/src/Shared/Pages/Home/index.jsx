@@ -4,8 +4,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -15,24 +14,31 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Snackbar from '@mui/material/Snackbar'; // ייבוא Snackbar
+import Alert from '@mui/material/Alert'; // ייבוא Alert
+import roomManage from '../../../assets/Images/roomManage.jpg';
 import './index.css';
 
 export default function Home() {
   const [user, setUser] = useState(null); // שמירת המידע על המשתמש המחובר
   const [rooms, setRooms] = useState([]); // שמירת רשימת החדרים
-  const [editingRoomId, setEditingRoomId] = useState(null); // מזהה החדר שנערך כרגע
+  const [isEditing, setIsEditing] = useState(false); // מזהה החדר שנערך כרגע
   const [editedRoomName, setEditedRoomName] = useState(''); // שם החדר הנערך
   const [editedRoomType, setEditedRoomType] = useState(''); // סוג החדר הנערך
   const [openAddRoom, setOpenAddRoom] = useState(false); // מצב פתיחת חלון הוספת חדר
   const [newRoomName, setNewRoomName] = useState(''); // שם החדר החדש
   const [newRoomType, setNewRoomType] = useState('Pop'); // סוג החדר החדש
+  const [userIp, setUserIp] = useState(''); 
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
+
   const navigate = useNavigate();
-  const location = useLocation();
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
+      console.log(parsedUser);
 
       const fetchRooms = async () => {
         try {
@@ -48,7 +54,7 @@ export default function Home() {
           if (response.ok) {
             const data = await response.json();
             console.log(data);
-            
+
             setRooms(data); // עדכון רשימת החדרים בסטייט
           } else {
             alert('Failed to fetch rooms.');
@@ -71,11 +77,13 @@ export default function Home() {
   // פונקציה ליציאה מהחשבון
   const handleLogout = async () => {
     try {
-      localStorage.removeItem('user'); // הסרת המשתמש מ-localStorage
-      alert('Logout Successful');
-      navigate('/'); // ניתוב לעמוד ההתחברות
+      localStorage.removeItem('user');
+      setOpenSnackbar(true); // פתיחת ה-Snackbar
+      setTimeout(() => {
+        navigate('/'); // ניתוב לעמוד ההתחברות אחרי 2 שניות
+      }, 2000);
     } catch (error) {
-      alert(`Error: ${error.message}`); // טיפול בשגיאה
+      alert(`Error: ${error.message}`);
     }
   };
 
@@ -94,17 +102,18 @@ export default function Home() {
     const passwordRoom = user?.id.toString()
     // יצירת אובייקט החדר החדש עם הפרטים מהסטייט
     const newRoom = {
-      id: 0, // הוספת מזהה ייחודי חדש שמבוסס על מספר החדרים הקיימים
+      roomID: 0, // הוספת מזהה ייחודי חדש שמבוסס על מספר החדרים הקיימים
       roomName: newRoomName,
       ownerID: user?.id, // מזהה בעל החדר הוא המשתמש המחובר
       createdAt: getCurrentDate(), // יצירת תאריך בפורמט ISO
       roomType: newRoomType, // סוג החדר
-      roomPassword: passwordRoom
+      roomPassword: passwordRoom,
+      IpRoom: "192.168.1.1"//IpRoom
     };
 
     try {
       // שליחת בקשת POST לכתובת ה-API שלך
-      const response = await fetch('http://www.apienchanter.somee.com/api/KaraokeRooms/create', {
+      const response = await fetch('http://www.ApiEnchanter.somee.com/api/KaraokeRooms/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -119,7 +128,8 @@ export default function Home() {
         setRooms([...rooms, newRoom]);
         setOpenAddRoom(false); // סגירת חלון הוספת חדר
         setNewRoomName(''); // איפוס שם החדר החדש
-        setNewRoomType('Pop'); // איפוס סוג החדר החדש
+        setNewRoomType(''); // איפוס סוג החדר החדש
+        // setUserIp(user?.id.toString());
         console.log(`לאחר היצירה:`, newRoom);
       } else {
         // במקרה של שגיאה מצד השרת, נקרא את הודעת השגיאה
@@ -183,155 +193,149 @@ export default function Home() {
       }
     }
   };
+  const onDelete = (id) => {
+
+    try {
+      fetch(`http://www.apienchanter.somee.com/api/KaraokeRooms/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': 'application/json',
+        },
+      }).then((response) => {
+        if (response.ok) {
+          const updatedRooms = rooms.filter(room => room.roomID !== id)
+          setRooms(updatedRooms);
+          console.log(updatedRooms);
+        } else {
+          alert('Failed to delete room.');
+        }
+      })
+        .catch((error) => {
+          alert(`Error deleting room: ${error.message}`);
+        });
+    } catch (error) {
+      alert(`Error deleting room: ${error.message}`);
+    }
 
 
+  }
+  const onEdit = (id) => {
+
+    setIsEditing(true)
+
+  }
   return (
     <div className='container'>
-      {user && (
-        <>
-          <div className='sidebar'>
-            <button onClick={handleLogout} className='logout-button'>
-              Log Out
-            </button>
-            <button onClick={handleAddRoom} className='add-room-button'>Add New Room</button>
-            <p style={{ color: 'white', fontSize: "2rem" }}> asdf
-            }</p>
-          </div>
-          <div className='content'>
-            <Paper sx={{ height: 400, width: '100%' }}>
-              <DataGrid
-                rows={rooms}
-                columns={[
-                  {
-                    field: 'roomName',
-                    headerName: 'Room Name',
-                    flex: 1,
-                    renderCell: (params) =>
-                      editingRoomId === params.row.id ? (
-                        <TextField
-                          value={editedRoomName}
-                          onChange={(e) => setEditedRoomName(e.target.value)}
-                        />
-                      ) : (
-                        <span
-                          onClick={() => handleRoomClick(params.row.roomId)}
-                          style={{ cursor: 'pointer', textDecoration: 'underline' }}
-                        >
-                          {params.value}
-                        </span>
-                      ),
-                  },
-                  { field: 'ownerId', headerName: 'Owner ID', flex: 1 },
-                  { field: 'createdAt', headerName: 'Created At', flex: 1 },
-                  {
-                    field: 'roomType',
-                    headerName: 'Room Type',
-                    flex: 1,
-                    renderCell: (params) =>
-                      editingRoomId === params.row.id ? (
-                        <TextField
-                          value={editedRoomType}
-                          onChange={(e) => setEditedRoomType(e.target.value)}
-                        />
-                      ) : (
-                        params.value
-                      ),
-                  },
-                  {
-                    field: 'actions',
-                    headerName: 'Actions',
-                    flex: 1,
-                    renderCell: (params) =>
-                      editingRoomId === params.row.id ? (
-                        <>
-                          <IconButton onClick={() => handleSaveClick(params.row.id)}>
-                            <CheckIcon />
-                          </IconButton>
-                          <IconButton onClick={handleCancelClick}>
-                            <CloseIcon />
-                          </IconButton>
-                        </>
-                      ) : (
-                        <>
-                          <IconButton onClick={() => handleEditClick(params.row)}>
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton onClick={() => handleDeleteClick(params?.row?.id)}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </>
-                      ),
-                  },
-                ]}
-                getRowId={(row) => row.roomID || row.id} // שינוי כאן: שימוש במזהה ייחודי מותאם אישית
+      {/* התראה של Snackbar */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={2000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+          Logout Successful
+        </Alert>
+      </Snackbar>
 
-                pageSizeOptions={[5, 10, 100]}
-                pageSize={10}
-                checkboxSelection
-                sx={{ border: 0 }}
-              />
-            </Paper>
+      <Dialog open={openAddRoom} onClose={() => setOpenAddRoom(false)}>
+        <DialogTitle>Add New Room</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Room Name"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={newRoomName}
+            onChange={(e) => setNewRoomName(e.target.value)}
+            helperText="Please enter the room name"
+          />
+          <Select
+            value={newRoomType}
+            onChange={(e) => setNewRoomType(e.target.value)}
+            fullWidth
+            variant="standard"
+            margin="dense"
+          >
+            <MenuItem value={'Pop'}>Pop</MenuItem>
+            <MenuItem value={'Rock'}>Rock</MenuItem>
+            <MenuItem value={'Jazz'}>Jazz</MenuItem>
+          </Select>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenAddRoom(false)}>Cancel</Button>
+          <Button onClick={handleAddRoomConfirm}>Add Room</Button>
+        </DialogActions>
+      </Dialog>
 
-          </div>
-          <Dialog open={openAddRoom} onClose={() => setOpenAddRoom(false)}>
-            <DialogTitle>Add New Room</DialogTitle>
-            <DialogContent>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Room Name"
-                type="text"
-                fullWidth
-                variant="standard"
-                value={newRoomName}
-                onChange={(e) => setNewRoomName(e.target.value)}
-                helperText="Please enter the room name"
-              />
-              <Select
-                value={newRoomType}
-                onChange={(e) => setNewRoomType(e.target.value)}
-                fullWidth
-                variant="standard"
-                margin="dense"
-              >
-                <MenuItem value={'Pop'}>Pop</MenuItem>
-                <MenuItem value={'Rock'}>Rock</MenuItem>
-                <MenuItem value={'Jazz'}>Jazz</MenuItem>
-              </Select>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setOpenAddRoom(false)}>Cancel</Button>
-              <Button onClick={handleAddRoomConfirm}>Add Room</Button>
-            </DialogActions>
-          </Dialog>
-        </>
-      )}
-      {/* <div className="left-block"></div>
+      <div className="left-block">
+        <div className='content'>
+          <button onClick={handleLogout} className='logout-button'>
+            Log Out
+          </button>
+          <button onClick={handleAddRoom} className='add-room-button'>Add New Room</button>
+          <p style={{ color: 'white', fontSize: "2rem" }}>
+          </p>
+        </div>
+      </div>
       <aside className="right-block">
-        <table>
-          <thead>
-            <tr>
-              <th>Room Name</th>
-              <th>Owner ID</th>
-              <th>Created At</th>
-              <th>Room Type</th>
-            </tr>
-
-          </thead>
-          <tbody>
-            {rooms.map((room) => (
-              <tr key={room.roomID}>
-                <td>{room.roomName}</td>
-                <td>{room.ownerId}</td>
-                <td>{room.createdAt}</td>
-                <td>{room.roomType}</td>
+        <div className="content">
+          <table>
+            <thead>
+              <tr>
+                <th>Room Name</th>
+                <th>Owner ID</th>
+                <th>Created At</th>
+                <th>Room Type</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-
-      </aside> */}
-
+            </thead>
+            <tbody>
+              {rooms.map((room, idx) => (
+                <tr key={room.roomID + idx}>
+                  <td
+                    style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                    onClick={() => handleRoomClick(room.roomID)}
+                  >
+                    {room.roomName}
+                  </td>
+                  <td>{room.ownerID}</td>
+                  <td>{room.createdAt}</td>
+                  <td>{room.roomType}</td>
+                  <td className="action-buttons">
+                    <div>
+                      <IconButton className="delete-icon-button" onClick={() => onDelete(room.roomID)}>
+                        <DeleteIcon />
+                      </IconButton>
+                      <IconButton className="edit-icon-button" onClick={() => onEdit(room.roomID)}>
+                        <EditIcon />
+                      </IconButton>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </aside>
+      {isEditing && (
+        <dialog open onClose={() => setIsEditing(false)}>
+          <form className="edit-room-dialog">
+            <h2>Edit Room</h2>
+            <label htmlFor="roomName">Room Name:</label>
+            <input
+              type="text"
+              id="roomName"
+              value={editedRoomName}
+              onChange={(e) => setEditedRoomName(e.target.value)} />
+          </form>
+          <button onClick={() => { }}>Save</button>
+          <button onClick={() => setIsEditing(false)}>Cancel</button>
+        </dialog>
+      )}
     </div>
   );
 }
+

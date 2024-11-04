@@ -3,12 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import firebase from '../../backend/firebaseConfig'; // ייבוא תצורת ה-Firebase
 import 'firebase/compat/auth';
 import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { Alert, Snackbar } from '@mui/material'; // ייבוא רכיבי ה-MUI
 
 export default function Login() {
   const [username, setUsername] = useState(''); // שמירת שם המשתמש בסטייט
   const [password, setPassword] = useState(''); // שמירת הסיסמה בסטייט
   const [isLoading, setIsLoading] = useState(false); // מעקב אחרי מצב הטעינה
   const [user, setUser] = useState(null); // שמירת המשתמש המחובר בסטייט
+  const [alertMessage, setAlertMessage] = useState(''); // הודעת ההתראה
+  const [alertSeverity, setAlertSeverity] = useState('success'); // סוג ההתראה: 'success', 'error', 'warning', 'info'
+  const [openAlert, setOpenAlert] = useState(false); // מצב פתיחת ההתראה
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,45 +27,6 @@ export default function Login() {
     return () => unsubscribe();
   }, []);
 
-  // כתובת ה-API
-  const apiUrl = 'http://www.enchanterapiuser.somee.com/api/UsersControllers/';
-
-  // פונקציה לטיפול בהתחברות עם שם משתמש וסיסמה
-  // פונקציה לטיפול בהתחברות עם שם משתמש וסיסמה
-  const handleUsernamePasswordLogin = async () => {
-    setIsLoading(true); // הפעלת מצב טעינה
-    try {
-      // שליחת בקשת התחברות לשרת ה-API
-      const response = await fetch(apiUrl + 'login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'accept': 'application/json',
-        },
-        body: JSON.stringify({ userName: username, password: password }), // שליחת פרטי התחברות
-      });
-
-      const data = await response.json(); // קבלת התגובה מה-API
-      setIsLoading(false); // סיום מצב טעינה
-
-      if (response.ok) {
-        console.log('Login Successful');
-        // שמירת המידע על המשתמש ב-localStorage כדי שניתן יהיה לגשת אליו מאוחר יותר
-        localStorage.setItem('user', JSON.stringify(data));
-        setUser(data); // עדכון המשתמש בסטייט
-
-        // ניווט לעמוד הבית לאחר התחברות מוצלחת
-        navigate('/home/manager');
-      } else {
-        alert('Login Failed');
-      }
-
-    } catch (error) {
-      setIsLoading(false); // סיום מצב טעינה במקרה של שגיאה
-      alert(`Error: ${error.message}`); // טיפול בשגיאה
-    }
-  };
-
   // useEffect לבדיקת המשתמש ב-LocalStorage
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -71,40 +36,189 @@ export default function Login() {
     }
   }, [navigate]);
 
+  // כתובת ה-API
+  const apiUrl = 'http://www.enchanterapiuser.somee.com/api/UsersControllers/';
 
-  // פונקציה לטיפול בהתחברות עם Google
-  // פונקציה לטיפול בהתחברות עם Google
-  const handleGoogleLogin = async () => {
-    const provider = new GoogleAuthProvider(); // ספק התחברות של Google
+  // פונקציה לסגירת ההתראה
+  const handleCloseAlert = () => {
+    setOpenAlert(false);
+  };
+
+  // פונקציה לטיפול בהתחברות עם שם משתמש וסיסמה
+  const handleUsernamePasswordLogin = async () => {
+    setIsLoading(true);
     try {
-      const result = await signInWithPopup(firebase.auth(), provider); // התחברות עם Google
-      const user = result.user; // קבלת פרטי המשתמש מ-Google
-      localStorage.setItem('user', JSON.stringify(user)); // שמירת המשתמש ב-LocalStorage
-      setUser(user); // עדכון המשתמש בסטייט
-      alert(`Login Successful, Welcome ${user.displayName}`);
-      console.log('User in HomePage:', user); // בדיקה האם המשתמש קיים בסטייט של עמוד הניהול
-      navigate('/home/manager'); // ניווט לעמוד הבית לאחר התחברות מוצלחת
+      const response = await fetch(apiUrl + 'login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': 'application/json',
+        },
+        body: JSON.stringify({ userName: username, password: password }),
+      });
+
+      const data = await response.json();
+      setIsLoading(false);
+      console.log(data);
+
+      if (response.ok) {
+        setAlertMessage('Login Successful');
+        setAlertSeverity('success');
+        setOpenAlert(true);
+        localStorage.setItem('user', JSON.stringify(data));
+        setUser(data);
+        navigate('/home/manager');
+      } else {
+        setAlertMessage('Login Failed');
+        setAlertSeverity('error');
+        setOpenAlert(true);
+      }
     } catch (error) {
-      alert(`Error: ${error.message}`); // טיפול בשגיאה בהתחברות עם Google
+      setIsLoading(false);
+      setAlertMessage(`Error: ${error.message}`);
+      setAlertSeverity('error');
+      setOpenAlert(true);
     }
   };
 
+  // פונקציה לטיפול בהתחברות עם Google
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(firebase.auth(), provider);
+      const user = result.user;
+      console.log("Google User Details:בדחיקה ראשונה", user);//בדיקה ראשנה
+  
+      const newUser = {
+        userName: user.displayName,
+        email: user.email,
+        phone: user.phoneNumber || "000-0000000",
+        password: "GoogleOAuthUser123",
+        birthday: new Date().toISOString().split('T')[0],
+        avatarUrl: "",
+        link: "",
+        ipUser: "",
+      };
+  
+      console.log("New User Details:בדיקה שניה ", newUser);//בדיקה שניה
+  
+      // בדיקת קיום המשתמש במערכת
+      const response = await fetch('http://www.Enchanter.somee.com/api/Users/email/' + user.email, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        // משתמש נמצא במערכת - התחברות
+        const userData = await response.json();
+        console.log('User found:בדיקה שלישית', userData);//בדיקה שלישית
+  
+        // התחברות עם ה-API של הלוגין
+        const loginResponse = await fetch(apiUrl + 'login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'accept': 'application/json',
+          },
+          body: JSON.stringify({ userName: userData.userName, password: "GoogleOAuthUser123" }),
+        });
+  
+        if (loginResponse.ok) {
+          const loginData = await loginResponse.json();
+          localStorage.setItem('user', JSON.stringify(loginData)); // שמירת פרטי המשתמש ב-localStorage
+          setUser(loginData);
+          setAlertMessage(`Login Successful, Welcome back ${user.displayName}`);
+          setAlertSeverity('success');
+          setOpenAlert(true);
+          navigate('/home/manager');
+
+        } else {
+          console.error('Login failed:', loginResponse.status);
+          setAlertMessage('Login Failed');
+          setAlertSeverity('error');
+          setOpenAlert(true);
+        }
+      } else {
+        // משתמש לא נמצא - יצירת משתמש חדש
+        console.log('User not found in the system, creating new user: ' );
+        console.log(response)
+        console.log(newUser)
+        const createUserResponse = await fetch('http://www.ApiEnchanter.somee.com/api/UsersControllers/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'accept': 'application/json',
+          },
+          body: JSON.stringify(newUser),
+        });
+  
+        if (createUserResponse.ok) {
+          setAlertMessage(`Registration Successful, Welcome ${user.displayName}`);
+          setAlertSeverity('success');
+          setOpenAlert(true);
+  
+          // התחברות לאחר יצירת משתמש חדש
+          const loginAfterCreateResponse = await fetch(apiUrl + 'login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'accept': 'application/json',
+            },
+            body: JSON.stringify({ userName: newUser.userName, password: "GoogleOAuthUser123" }),
+          });
+  
+          if (loginAfterCreateResponse.ok) {
+            const loginAfterCreateData = await loginAfterCreateResponse.json();
+            localStorage.setItem('user', JSON.stringify(loginAfterCreateData)); // שמירת פרטי המשתמש ב-localStorage
+            setUser(loginAfterCreateData);
+            setAlertMessage(`Login Successful, Welcome ${user.displayName}`);
+            setAlertSeverity('success');
+            setOpenAlert(true);
+            navigate('/home/manager');
+          } else {
+            console.error('Login after create failed:', loginAfterCreateResponse.status);
+            setAlertMessage('Failed to login after registration.');
+            setAlertSeverity('error');
+            setOpenAlert(true);
+          }
+        } else {
+          console.error('Failed to create new user:', createUserResponse.status);
+          setAlertMessage('Failed to register the user.');
+          setAlertSeverity('error');
+          setOpenAlert(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setAlertMessage(`Error: ${error.message}`);
+      setAlertSeverity('error');
+      setOpenAlert(true);
+    }
+  };
+  
 
   // פונקציה ליציאה מהחשבון
   const handleLogout = async () => {
     try {
-      await signOut(firebase.auth()); // יציאה מהחשבון
-      alert('Logout Successful');
-      navigate('/auth/login'); // חזרה לעמוד ההתחברות לאחר יציאה
+      await signOut(firebase.auth());
+      setAlertMessage('Logout Successful');
+      setAlertSeverity('success');
+      setOpenAlert(true);
+      navigate('/');
     } catch (error) {
-      alert(`Error: ${error.message}`); // טיפול בשגיאה בעת יציאה
+      setAlertMessage(`Error: ${error.message}`);
+      setAlertSeverity('error');
+      setOpenAlert(true);
     }
   };
 
   // פונקציה שתפעל בעת שליחת הטופס
   const handleSubmit = (e) => {
-    e.preventDefault(); // מניעת רענון של הדף בעת שליחת הטופס
-    handleUsernamePasswordLogin(); // קריאה לפונקציית ההתחברות עם שם משתמש וסיסמה
+    e.preventDefault();
+    handleUsernamePasswordLogin();
   };
 
   return (
@@ -135,7 +249,7 @@ export default function Login() {
                 placeholder='user name'
                 type='text'
                 value={username}
-                onChange={(e) => setUsername(e.target.value)} // עדכון שם המשתמש בסטייט
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
@@ -144,17 +258,17 @@ export default function Login() {
                 placeholder='Password'
                 type='password'
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} // עדכון הסיסמה בסטייט
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
 
             <button type='submit' className='login-button' disabled={isLoading}>
-              {isLoading ? 'Logging in...' : 'Login'} {/* הצגת הודעה בהתאם למצב טעינה */}
+              {isLoading ? 'Logging in...' : 'Login'}
             </button>
 
             <button type='button' className='google-login-button' onClick={handleGoogleLogin}>
-              Login with Google {/* כפתור התחברות עם Google */}
+              Login with Google
             </button>
 
             <p className='forgot-password'>
@@ -166,6 +280,18 @@ export default function Login() {
           </form>
         </div>
       )}
+
+      {/* התראה מעוצבת של MUI */}
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={6000}
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // שינוי מיקום ההתראה
+      >
+        <Alert onClose={handleCloseAlert} severity={alertSeverity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

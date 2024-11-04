@@ -6,38 +6,67 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
-  font-size: 62.5%; /* כדי לעבוד עם REM */
+  font-size: 62.5%;
+  /* כדי לעבוד עם REM */
   font-family: 'Arial', sans-serif;
 }
 
 .container {
   display: flex;
-  height: 100vh; /* כדי שכל התצוגה תתפוס את כל גובה המסך */
-  width: 100vw;  /* כדי שהתצוגה תתפוס את כל רוחב המסך */
+  height: 100vh;
+  width: 100vw;
 }
 
 /* הצד השמאלי - עם הטופס */
 .reverse-left-side {
-  background-color: white; /* רקע לבן */
-  width: 40%;  /* 40% מהמסך לטופס */
-  padding: 5rem;  /* מרווח פנימי */
+  background-color: white;
+  width: 40%;
+  padding: 5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-/* הצד הימני */
+.reverse-left-side .content {
+  position: relative;
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+
 .reverse-right-side {
-  background-color: lightblue; /* צבע רקע בהיר */
-  width: 60%;  /* 60% מהמסך לתוכן */
+  background-image: url('../../../assets/Images/micTable.jpg');
+  /* עדכון הנתיב לתמונה */
+  background-size: cover;
+  background-position: center;
+  width: 60%;
   display: flex;
   justify-content: center;
   flex-direction: column;
   padding: 5rem;
-  color: white;
+  color: rgba(255, 255, 255, 1);
+  text-align: center;
+  font-size: 1.6rem;
+}
+
+.reverse-right-side .content {
+  backdrop-filter: blur(10px);
+  width: 70%;
+  margin: 0 auto;
+  background-color: rgba(0, 0, 0, .1);
+  border-radius: 2rem;
+}
+
+.reverse-right-side h1 {
+  font-weight: 700;
+  margin-bottom: 2rem;
 }
 
 .read-more {
@@ -75,7 +104,7 @@ html, body {
 .auth div input {
   border-radius: .5rem;
   border: none;
-  background-color: rgba(0, 0, 0, .1); 
+  background-color: rgba(0, 0, 0, .1);
   padding: .5rem 1rem;
   width: 100%;
 }
@@ -94,8 +123,99 @@ html, body {
   font-size: 1.6rem;
   cursor: pointer;
   margin-top: 1.5rem;
+  text-decoration: none;
 }
 
 .submit-button:hover {
   background-color: #007ACC;
+}
+
+.notification-success {
+  --bg: #313e2c;
+  --primary: #a1d1a1;
+}
+
+.notification-error {
+  --bg: #3a2d2d;
+  --primary: #d1a1a1;
+}
+
+.notification {
+  min-width: 32rem;
+  border-radius: 1rem;
+  position: absolute;
+  bottom: -20%;
+
+  background: var(--bg);
+  color: var(--primary);
+  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(1.875rem);
+  opacity: 0;
+  visibility: hidden;
+  animation: fadeIn 2.5s linear;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+/* מחלקת הבודי של ההתראה */
+.notification-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+/* הגדרת פסקאות בתוך הבודי */
+.notification-body p {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+/* מחלקת ההתקדמות של ההתראה */
+.notification-progress {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  width: calc(100% - 2rem);
+  height: 0.2rem;
+  background: linear-gradient(to right, transparent, var(--primary));
+  border-radius: 0 0 1rem 1rem;
+  transform-origin: left;
+  animation: progress 2.6275s linear;
+}
+
+@keyframes progress {
+  0% {
+    transform: scaleX(0);
+  }
+
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    transform: translateY(1.875rem);
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  10% {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  90% {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  100% {
+    transform: translateY(1.875rem);
+    opacity: 0;
+    visibility: hidden;
+  }
 }

@@ -6,24 +6,32 @@
   box-sizing: border-box;
 }
 
-.forgot-password, .register-link, .sign-in-link {
+.forgot-password,
+.register-link,
+.sign-in-link {
   text-align: center;
   margin-top: 1.5rem;
 }
 
-.forgot-password a, .register-link a, .sign-in-link a {
+.forgot-password a,
+.register-link a,
+.sign-in-link a {
   color: #0091FF;
   font-size: 1.4rem;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   transition: color 0.3s, transform 0.3s;
-  cursor: pointer; /* משנה את הסמן ליד */
+  cursor: pointer;
+  /* משנה את הסמן ליד */
 }
 
-.forgot-password a:hover, .register-link a:hover, .sign-in-link a:hover {
+.forgot-password a:hover,
+.register-link a:hover,
+.sign-in-link a:hover {
   color: #007ACC;
-  transform: translateX(5px); /* אפקט של תזוזת החץ */
+  transform: translateX(5px);
+  /* אפקט של תזוזת החץ */
 }
 
 .arrow {
@@ -32,12 +40,14 @@
 }
 
 a:hover .arrow {
-  transform: translateX(5px); /* אפקט של החץ עצמו */
+  transform: translateX(5px);
+  /* אפקט של החץ עצמו */
 }
 
-html, body {
-  height: 100%; 
-  font-size: 62.5%; 
+html,
+body {
+  height: 100%;
+  font-size: 62.5%;
 }
 
 body {
@@ -47,25 +57,31 @@ body {
 
 .container {
   display: flex;
-  height: 100vh; 
-  width: 100vw; 
+  height: 100vh;
+  width: 100vw;
 }
 
 .left-side.register-background {
-  background: url('./assets/Images/micReg.webp') no-repeat center center; 
-  background-size: cover; /* ודא שהתמונה תכסה את כל השטח */
-  width: 60%; /* 60% מהמסך */
+  background: url('') no-repeat center center;
+  background-size: cover;
+  /* ודא שהתמונה תכסה את כל השטח */
+  width: 60%;
+  /* 60% מהמסך */
   padding: 5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   color: white;
+
+ 
 }
 
 .left-side.login-background {
-  background: url('./assets/Images/micLogin.jpg') no-repeat center center; 
-  background-size: cover; /* ודא שהתמונה תכסה את כל השטח */
-  width: 60%; /* 60% מהמסך */
+  background: url('./assets/Images/micLogin.jpg') no-repeat center center;
+  background-size: cover;
+  /* ודא שהתמונה תכסה את כל השטח */
+  width: 60%;
+  /* 60% מהמסך */
   padding: 5rem;
   display: flex;
   flex-direction: column;
@@ -101,7 +117,8 @@ body {
 
 .right-side {
   background-color: white;
-  width: 40%; /* 40% מהמסך */
+  width: 40%;
+  /* 40% מהמסך */
   padding: 5rem;
   display: flex;
   flex-direction: column;
@@ -130,7 +147,7 @@ body {
 .auth div input {
   border-radius: .5rem;
   border: none;
-  background-color: rgba(0, 0, 0, .1); 
+  background-color: rgba(0, 0, 0, .1);
   padding: .5rem 1rem;
   width: 100%;
 }
@@ -139,19 +156,8 @@ body {
   color: #555;
 }
 
-.submit-button, .login-button {
-  width: 100%;
-  padding: 1.2rem;
-  background-color: #0091FF;
-  color: white;
-  border: none;
-  border-radius: 5rem;
-  font-size: 1.6rem;
-  cursor: pointer;
-  margin-top: 1.5rem;
-  transition: background-color 0.3s;
-}
-.google-login-button{
+.submit-button,
+.login-button {
   width: 100%;
   padding: 1.2rem;
   background-color: #0091FF;
@@ -164,7 +170,21 @@ body {
   transition: background-color 0.3s;
 }
 
-.submit-button:hover, .login-button:hover {
+.google-login-button {
+  width: 100%;
+  padding: 1.2rem;
+  background-color: #0091FF;
+  color: white;
+  border: none;
+  border-radius: 5rem;
+  font-size: 1.6rem;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover,
+.login-button:hover {
   background-color: #007ACC;
 }
 
@@ -182,10 +202,9 @@ body {
     opacity: 0;
     translate: 0 -100px;
   }
+
   to {
     opacity: 1;
     translate: 0;
   }
 }
-
-

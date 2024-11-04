@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
-import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -15,6 +14,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import LinkIcon from '@mui/icons-material/Link';
 import './RoomManager.css';
 
 export default function RoomManager() {
@@ -24,28 +24,68 @@ export default function RoomManager() {
   const [openMessageDialog, setOpenMessageDialog] = useState(false);
   const [message, setMessage] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
+  const [showAudioDiv, setShowAudioDiv] = useState(false);
+
 
   useEffect(() => {
-    // Mock data for users in the room
-    const mockUsers = [
-      { id: 1, name: 'User A', email: 'usera@example.com', phone: '123-456-7890' },
-      { id: 2, name: 'User B', email: 'userb@example.com', phone: '987-654-3210' },
-      { id: 3, name: 'User C', email: 'userc@example.com', phone: '555-666-7777' },
-    ];
-    setUsers(mockUsers);
+    // קריאה ל-API כדי להביא את כל המשתמשים בחדר לפי ה-ID
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(`http://ApiEnchanter.somee.com/api/KaraokeRooms/all/users/${roomId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'accept': 'application/json',
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUsers(data); // עדכון הסטייט עם המשתמשים שהתקבלו מה-API
+          console.log(data);
+
+        } else {
+          alert('Failed to fetch users.');
+        }
+      } catch (error) {
+        alert(`Error fetching users: ${error.message}`);
+      }
+    };
+
+    fetchUsers(); // קריאה לפונקציה לטעינת המשתמשים בחדר
 
     // Mock data for song requests in the room
     const mockRequests = [
-      { id: 1, nickname: 'User A', phone: '123-456-7890', songName: 'Song A', link: 'https://example.com/songA' },
-      { id: 2, nickname: 'User B', phone: '987-654-3210', songName: 'Song B', link: 'https://example.com/songB' },
-      { id: 3, nickname: 'User C', phone: '555-666-7777', songName: 'Song C', link: 'https://example.com/songC' },
+      { id: 1, nickname: 'שי המשורר', phone: '123-456-7890', songName: 'אבא - בן צור ', link: 'https://www.youtube.com/watch?v=xJWiDfMsw0U' },
+      { id: 2, nickname: 'עדי המעללפפתתתת XOXO', phone: '987-654-3210', songName: 'כוכבים - שילה בן סעדון', link: 'https://www.youtube.com/watch?v=8MuoC5DCFwg' },
+      { id: 3, nickname: 'יעלי המוש <3', phone: '555-666-7777', songName: 'ואיך שלא', link: 'https://www.youtube.com/watch?v=gkqHQxbL-MY' },
     ];
     setRequests(mockRequests);
   }, [roomId]);
 
+
   // Handlers for user actions
-  const handleRemoveUser = (userId) => {
-    setUsers(users.filter(user => user.id !== userId));
+  const handleRemoveUser = async (userId) => {
+    if (window.confirm('Are you sure you want to remove this user from the room?')) {
+      try {
+        const response = await fetch(`http://www.apienchanter.somee.com/api/KaraokeRooms/user/${userId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'accept': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          // הסרה מהסטייט של המשתמש לאחר מחיקה מוצלחת בשרת
+          setUsers(users.filter(user => user.id !== userId));
+          console.log(`User with ID ${userId} has been removed successfully.`);
+        } else {
+          alert('Failed to remove user from the room.');
+        }
+      } catch (error) {
+        alert(`Error removing user from the room: ${error.message}`);
+      }
+    }
   };
 
   const handleApproveRequest = (requestId) => {
@@ -55,7 +95,6 @@ export default function RoomManager() {
   const handleRejectRequest = (requestId) => {
     setRequests(requests.filter(request => request.id !== requestId));
   };
-
 
   const handleMoveUpRequest = (requestId) => {
     const index = requests.findIndex(request => request.id === requestId);
@@ -77,8 +116,6 @@ export default function RoomManager() {
     }
   };
 
-
-
   const handleOpenMessageDialog = (nickname, phone) => {
     setSelectedUser({ nickname, phone });
     setOpenMessageDialog(true);
@@ -93,7 +130,11 @@ export default function RoomManager() {
     console.log(`Sending message to ${selectedUser.nickname} (${selectedUser.phone}): ${message}`);
     handleCloseMessageDialog();
   };
-
+  const handleConnectRequest = (link) => {
+    window.open(link, '_blank', 'noopener,noreferrer');
+  };
+        //איקולזחר
+  
   return (
     <div className='room-manager-container layout'>
       <div className='sidebar'>
@@ -101,8 +142,7 @@ export default function RoomManager() {
         <Paper sx={{ height: 400, width: '100%' }}>
           <DataGrid
             rows={requests}
-            getRowId={(row) => row.id} // שימוש ב-ID כזיהוי ייחודי לשורה
-
+            getRowId={(row) => row.id}
             columns={[
               { field: 'nickname', headerName: 'Nickname', flex: 1 },
               { field: 'phone', headerName: 'Phone Number', flex: 1 },
@@ -121,8 +161,8 @@ export default function RoomManager() {
                 flex: 1,
                 renderCell: (params) => (
                   <div className='action-buttons'>
-                    <IconButton onClick={() => handleApproveRequest(params.row.id)}>
-                      <CheckIcon className='approve-icon' />
+                    <IconButton onClick={() => handleConnectRequest(params.row.link)}>
+                      <LinkIcon className='connect-icon' /> 
                     </IconButton>
                     <IconButton onClick={() => handleRejectRequest(params.row.id)}>
                       <CloseIcon className='reject-icon' />
@@ -144,26 +184,37 @@ export default function RoomManager() {
             checkboxSelection
             sx={{ border: 0 }}
           />
-
         </Paper>
       </div>
       <div className='content'>
-        <h1>Room Manager for: {roomId}</h1>
+        <h1>Room Manager number : {roomId}</h1>
         <Paper sx={{ height: 400, width: '100%' }}>
           <DataGrid
             rows={users}
             columns={[
-              { field: 'name', headerName: 'User Name', flex: 1 },
-              { field: 'email', headerName: 'Email', flex: 1 },
+              {
+                field: 'avatarUrl',
+                headerName: 'Avatar',
+                flex: 0.5,
+                renderCell: (params) => (
+                  <div className="avatar-cell">
+                    <img src={params.value} alt="Avatar" className="avatar-image" />
+                  </div>
+                ),
+              },
+              { field: 'userName', headerName: 'User Name', flex: 1 },
               { field: 'phone', headerName: 'Phone Number', flex: 1 },
+              { field: 'ipUser', headerName: 'ip', flex: 1 },
               {
                 field: 'actions',
                 headerName: 'Actions',
-                flex: 1,
+                flex: 0.5,
                 renderCell: (params) => (
-                  <IconButton onClick={() => handleRemoveUser(params.row.id)}>
-                    <DeleteIcon className='remove-user-button' />
-                  </IconButton>
+                  <div className="action-buttons">
+                    <IconButton className="delete-icon-button" onClick={() => handleRemoveUser(params.row.id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </div>
                 ),
               },
             ]}
@@ -172,6 +223,7 @@ export default function RoomManager() {
             sx={{ border: 0 }}
           />
         </Paper>
+
       </div>
       <Dialog open={openMessageDialog} onClose={handleCloseMessageDialog}>
         <DialogTitle>Send Message to {selectedUser?.nickname} ({selectedUser?.phone})</DialogTitle>

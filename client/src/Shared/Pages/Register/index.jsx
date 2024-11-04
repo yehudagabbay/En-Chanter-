@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './index.css';
+import { AvatarContext } from '../../Context/avatarContext'; // ייבוא הקונטקסט
+
 
 export default function Register() {
     const [username, setUsername] = useState('');
@@ -9,10 +10,14 @@ export default function Register() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [birthday, setBirthday] = useState('');
+    const [selectedAvatarId, setSelectedAvatarId] = useState(null);
+
+
+    // גישה לנתוני האווטרים מהקונטקסט
+    const avatars = useContext(AvatarContext);
 
     const navigate = useNavigate();
-
-    const apiUrl = 'http://www.enchanterapiuser.somee.com/api/UsersControllers/';
+    const apiUrl = 'http://www.Enchanter.somee.com/api/UsersControllers/';
 
     const handleRegister = async () => {
         setIsLoading(true);
@@ -29,10 +34,10 @@ export default function Register() {
                     email,
                     phone,
                     password,
-                    birthday: formattedBirthday
+                    birthday: formattedBirthday,
+                    // avatarId: selectedAvatarId // שליחת ה-ID של האווטר ל-API
                 }),
             });
-            console.log(response);
             setIsLoading(false);
 
             if (response.ok) {
@@ -48,18 +53,10 @@ export default function Register() {
         }
     };
 
-
-
     const handleSubmit = (e) => {
         e.preventDefault();
         handleRegister();
     };
-    const handleDateChange = (e) => {
-        const date = new Date(e.target.value);
-        const formattedDate = date.toISOString().split('T')[0]; // משנה את הפורמט ל- yyyy-MM-dd
-        setBirthday(formattedDate);
-    };
-
 
     return (
         <div className='container'>
@@ -110,13 +107,6 @@ export default function Register() {
                         />
                     </div>
                     <div className="input-box">
-                        <input
-                            placeholder='Password again'
-                            type="password"
-                            required
-                        />
-                    </div>
-                    <div className="input-box">
                         <label htmlFor="birthday">Date of Birth</label>
                         <input
                             id="birthday"
@@ -125,7 +115,20 @@ export default function Register() {
                             onChange={(e) => setBirthday(e.target.value)}
                             required
                         />
-
+                    </div>
+                    <div className="avatar-selection">
+                        <p>Select an Avatar:</p>
+                        <div className="avatars-container">
+                            {avatars.map((avatar) => (
+                                <img
+                                    key={avatar.id}
+                                    src={avatar.src}
+                                    alt={`Avatar ${avatar.id}`}
+                                    className={`avatar ${selectedAvatarId === avatar.id ? 'selected' : ''}`}
+                                    onClick={() => setSelectedAvatarId(avatar.id)}
+                                />
+                            ))}
+                        </div>
                     </div>
                     <p className="forgot-password">
                         <a onClick={() => { navigate("/auth/forgetPass") }}>Forgot Password <span className="arrow">→</span></a>
