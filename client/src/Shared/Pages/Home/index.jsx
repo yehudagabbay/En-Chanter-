@@ -4,6 +4,10 @@ import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import { publicIpv4 } from 'public-ip';
+
+
+
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
@@ -28,11 +32,29 @@ export default function Home() {
   const [openAddRoom, setOpenAddRoom] = useState(false); // מצב פתיחת חלון הוספת חדר
   const [newRoomName, setNewRoomName] = useState(''); // שם החדר החדש
   const [newRoomType, setNewRoomType] = useState('Pop'); // סוג החדר החדש
-  const [userIp, setUserIp] = useState(''); 
+  const [userIp, setUserIp] = useState('');
+
   const [openSnackbar, setOpenSnackbar] = useState(false);
-
-
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+   
+    const fetchIp = async () => {
+      try {
+        const ip = await publicIpv4(); 
+        setUserIp(ip);
+        console.log('User IP:', ip);
+      } catch (error) {
+        console.error('Failed to get IP:', error);
+      }
+    };
+  
+    fetchIp();
+  }, []);
+
+  
+
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -108,7 +130,7 @@ export default function Home() {
       createdAt: getCurrentDate(), // יצירת תאריך בפורמט ISO
       roomType: newRoomType, // סוג החדר
       roomPassword: passwordRoom,
-      IpRoom: "192.168.1.1"//IpRoom
+      IpRoom: userIp//IpRoom
     };
 
     try {
@@ -129,7 +151,6 @@ export default function Home() {
         setOpenAddRoom(false); // סגירת חלון הוספת חדר
         setNewRoomName(''); // איפוס שם החדר החדש
         setNewRoomType(''); // איפוס סוג החדר החדש
-        // setUserIp(user?.id.toString());
         console.log(`לאחר היצירה:`, newRoom);
       } else {
         // במקרה של שגיאה מצד השרת, נקרא את הודעת השגיאה
@@ -137,7 +158,6 @@ export default function Home() {
         alert(`Failed to add room: ${errorText}`);
       }
     } catch (error) {
-      // טיפול בשגיאה בעת שליחה לשרת
       alert(`Error: ${error.message}`);
     }
   };

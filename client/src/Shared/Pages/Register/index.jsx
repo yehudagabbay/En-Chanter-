@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
 import { AvatarContext } from '../../Context/avatarContext'; // ייבוא הקונטקסט
-
 
 export default function Register() {
     const [username, setUsername] = useState('');
@@ -11,7 +12,6 @@ export default function Register() {
     const [isLoading, setIsLoading] = useState(false);
     const [birthday, setBirthday] = useState('');
     const [selectedAvatarId, setSelectedAvatarId] = useState(null);
-
 
     // גישה לנתוני האווטרים מהקונטקסט
     const avatars = useContext(AvatarContext);
@@ -35,7 +35,7 @@ export default function Register() {
                     phone,
                     password,
                     birthday: formattedBirthday,
-                    // avatarId: selectedAvatarId // שליחת ה-ID של האווטר ל-API
+                   avatarUrl: avatarUrl
                 }),
             });
             setIsLoading(false);
@@ -118,23 +118,28 @@ export default function Register() {
                     </div>
                     <div className="avatar-selection">
                         <p>Select an Avatar:</p>
-                        <div className="avatars-container">
+                        <Stack direction="row" spacing={2} className="avatars-container">
                             {avatars.map((avatar) => (
-                                <img
+                                <Avatar
                                     key={avatar.id}
                                     src={avatar.src}
                                     alt={`Avatar ${avatar.id}`}
-                                    className={`avatar ${selectedAvatarId === avatar.id ? 'selected' : ''}`}
+                                    sx={{
+                                        width: 56,
+                                        height: 56,
+                                        border: selectedAvatarId === avatar.id ? '3px solid blue' : 'none',
+                                        cursor: 'pointer',
+                                    }}
                                     onClick={() => setSelectedAvatarId(avatar.id)}
                                 />
                             ))}
-                        </div>
+                        </Stack>
                     </div>
                     <p className="forgot-password">
                         <a onClick={() => { navigate("/auth/forgetPass") }}>Forgot Password <span className="arrow">→</span></a>
                     </p>
                     <p className="sign-in-link">
-                        <a onClick={() => { navigate("/auth/login") }}>Sign-In <span className="arrow">→</span></a>
+                        <a onClick={() => { navigate("/") }}>Sign-In <span className="arrow">→</span></a>
                     </p>
                     <button type="submit" className="register-button" disabled={isLoading}>
                         {isLoading ? 'Registering...' : 'Register'}

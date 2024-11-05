@@ -53,3 +53,80 @@
   object-fit: cover;
   border: 1px solid #ccc;
 }
+.equalizer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #222;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.equalizer h2 {
+  text-align: center;
+  font-size: 24px;
+  color: #ffdd57;
+}
+
+.equalizer div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.equalizer label {
+  margin-bottom: 5px;
+  font-size: 14px;
+  text-align: center;
+  color: #ffdd57;
+}
+
+.equalizer input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #ffdd57, #ff5733);
+  border-radius: 5px;
+  outline: none;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.equalizer input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #ff5733;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 87, 51, 0.7);
+  transition: background 0.3s;
+}
+
+.equalizer input[type="range"]::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #ff5733;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 87, 51, 0.7);
+  transition: background 0.3s;
+}
+
+.equalizer input[type="range"]:hover {
+  opacity: 1;
+}
+
+.equalizer input[type="range"]::-webkit-slider-thumb:hover {
+  background: #ffdd57;
+}
+
+.equalizer input[type="range"]::-moz-range-thumb:hover {
+  background: #ffdd57;
+}
+
