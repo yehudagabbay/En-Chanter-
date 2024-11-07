@@ -17,9 +17,12 @@ export default function Login() {
 
   useEffect(() => {
     // בדיקה אם יש משתמש מחובר בעת טעינת הקומפוננטה
+
+
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         setUser(user);
+    
       } else {
         setUser(null);
       }
@@ -27,12 +30,13 @@ export default function Login() {
     return () => unsubscribe();
   }, []);
 
-  // useEffect לבדיקת המשתמש ב-LocalStorage
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
-      navigate('/home/manager'); // אם המשתמש קיים ב-LocalStorage, להעביר לעמוד הבית
+      setTimeout(() => {
+        navigate('/home/manager');
+    }, 3000);  
     }
   }, [navigate]);
 
@@ -103,14 +107,14 @@ export default function Login() {
       console.log("New User Details:בדיקה שניה ", newUser);//בדיקה שניה
   
       // בדיקת קיום המשתמש במערכת
-      const response = await fetch('http://www.Enchanter.somee.com/api/Users/email/' + user.email, {
+      const response = await fetch('http://apienchanter.somee.com/api/UsersControllers/email/' + user.email, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'accept': 'application/json',
         },
       });
-  
+      console.log("Response:בדיקה שלישית", response);//בדיקה שלישית
       if (response.ok) {
         // משתמש נמצא במערכת - התחברות
         const userData = await response.json();
@@ -133,7 +137,8 @@ export default function Login() {
           setAlertMessage(`Login Successful, Welcome back ${user.displayName}`);
           setAlertSeverity('success');
           setOpenAlert(true);
-          navigate('/home/manager');
+            navigate('/home/manager');
+      
 
         } else {
           console.error('Login failed:', loginResponse.status);

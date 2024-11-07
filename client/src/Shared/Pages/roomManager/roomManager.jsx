@@ -59,40 +59,8 @@ export default function RoomManager() {
       }
     };
 
-    fetchUsers(); // קריאה לפונקציה לטעינת המשתמשים בחדר
+    fetchUsers(); //הפעלה של הפונקציה מדש
 
-    // קריאה ל-API כדי להביא את הבקשות ולהכניס אותן לסטייט
-    const fetchRequests = async () => {
-      try {
-        const response = await fetch(`http://www.enchanterr.somee.com/queue/${roomId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'accept': 'application/json',
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          const formattedRequests = data.map((item) => ({
-            queueID: item.queueID,
-            userName: item.userName,
-            songName: item.songName,
-            linkSong: item.linkSong,
-            roomId: roomId,
-          }));
-          setRequests(data);
-          console.log(data);
-
-        } else {
-          // alert('Failed to fetch requests.');
-          setAlertMessage('אין בקשות בחדר.');
-        }
-      } catch (error) {
-        alert(`Error fetching requests: ${error.message}`);
-      }
-    };
-
-    fetchRequests(); // קריאה לפונקציה לטעינת הבקשות מה-API
 
 
     // הגדרת הקשר לאודיו והכנת הפילטרים לאיקולייזר
@@ -118,6 +86,43 @@ export default function RoomManager() {
     }
   }, [roomId]);
 
+  useEffect(()=>{
+    fetchRequests(); //לבקשות קראיה לרינדטור אוטמטי
+    const interval = setInterval(fetchRequests, 3000);
+    return () => clearInterval(interval);
+  })
+
+
+  const fetchRequests = async () => {
+    try {
+      const response = await fetch(`http://www.enchanterr.somee.com/queue/${roomId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const formattedRequests = data.map((item) => ({
+          queueID: item.queueID,
+          userName: item.userName,
+          songName: item.songName,
+          linkSong: item.linkSong,
+          roomId: roomId,
+        }));
+        setRequests(data);
+        console.log(data);
+
+      } else {
+        // alert('Failed to fetch requests.');
+        setAlertMessage('אין בקשות בחדר.');
+      }
+    } catch (error) {
+      // alert(`Error fetching requests: ${error.message}`);
+    }
+  };
+
 
   const handleDeleteRequest = async (queueID) => {
     try {
@@ -132,7 +137,6 @@ export default function RoomManager() {
 
       if (response.ok) {
         await new Promise(resolve => setTimeout(resolve, 2000));
-        fetchRequests();
       } else {
         // alert('Failed to delete request.');
       }

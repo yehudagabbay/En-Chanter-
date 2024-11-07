@@ -39,19 +39,15 @@ export default function Home() {
 
 
   useEffect(() => {
-   
-    const fetchIp = async () => {
-      try {
-        const ip = await publicIpv4(); 
-        setUserIp(ip);
-        console.log('User IP:', ip);
-      } catch (error) {
-        console.error('Failed to get IP:', error);
-      }
-    };
-  
-    fetchIp();
-  }, []);
+    // ביצוע בקשת fetch לשרת
+    fetch('http://localhost:3001/api/ip')
+        .then(response => response.json())
+        .then(data => {
+          setUserIp(data.ip);
+            console.log(data); // console.log צריך להיות בתוך ה-.then
+        })
+        .catch(error => console.error('Error fetching IP:', error));
+}, []);
 
   
 
@@ -247,7 +243,6 @@ export default function Home() {
   }
   return (
     <div className='container'>
-      {/* התראה של Snackbar */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={2000}
